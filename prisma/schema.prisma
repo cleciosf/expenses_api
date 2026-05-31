@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PaymentMethodType {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String
+  email         String    @unique
+  password_hash String
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime? @default(now())
+
+  expenses   Expense[]
+  categories Category[]
+
+  @@map("users")
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  ownerId    String   @db.Uuid
+  name       String
+  isActive   Boolean  @default(true)
+  create_at  DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId])
+  @@map("categories")
+}
+
+model Expense {
+  id            String            @id @default(uuid()) @db.Uuid
+  userId        String            @db.Uuid
+  categoryId    String?
+  description   String
+  amount        Decimal           @db.Decimal(6, 2)
+  paymentMethod PaymentMethodType
+  expenseDate   DateTime          @db.Date
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  deletedAt     DateTime?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([userId, expenseDate])
+  @@index([userId, categoryId])
+  @@index([deletedAt])
+  @@map("expenses")
+}
