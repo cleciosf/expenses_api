@@ -12,7 +12,7 @@ app.register(fastifyJwt, {
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
     return reply
-      .status(404)
+      .status(400)
       .send({ message: 'Validation Error', issues: error.format() })
   }
 
