@@ -2,7 +2,7 @@ import type { User, Prisma } from '@prisma/client';
 import type { UsersRepository } from '../users-repository'
 import { randomUUID } from 'node:crypto'
 
-export class inMemoryUserRepository implements UsersRepository {
+export class InMemoryUserRepository implements UsersRepository {
   public items: User[] = []
 
   async findById(id: string) {

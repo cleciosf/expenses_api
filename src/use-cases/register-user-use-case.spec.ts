@@ -1,23 +1,23 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register-user-use-case'
-import { inMemoryUserRepository } from '@/repositories/in-memory/in-memory-user-repository'
+import { InMemoryUserRepository } from '@/repositories/in-memory/in-memory-user-repository'
 import { compare } from 'bcryptjs'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 
-let userRepository: inMemoryUserRepository
+let userRepository: InMemoryUserRepository
 let sut: RegisterUseCase
 
 describe('Register Use Case', () => {
   beforeEach(() => {
-    userRepository = new inMemoryUserRepository()
+    userRepository = new InMemoryUserRepository()
     sut = new RegisterUseCase(userRepository)
   })
 
-  it('should be able to register an user', async () => {
+  it('should be able to register a user', async () => {
     const { user } = await sut.execute({
       name: 'fulano',
       email: 'teste@gmail.com',
-      password: '123',
+      password: '123'
     })
 
     expect(user.id).toEqual(expect.any(String))
