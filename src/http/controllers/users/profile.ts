@@ -8,11 +8,10 @@ export async function profile(request: FastifyRequest, reply: FastifyReply) {
     userId: request.user.sub
   })
 
-  return reply.status(200).send({
-    user: {
-      ...user,
-      passwordHash: undefined
-    }
-  })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { passwordHash: _, ...userWithoutPassword } = user
 
+  return reply.status(200).send({
+    user: userWithoutPassword
+  })
 }

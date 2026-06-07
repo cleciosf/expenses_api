@@ -3,6 +3,7 @@ import type { UsersRepository } from '@/repositories/users-repository'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 import type { User } from '@prisma/client'
 
+const BCRYPT_ROUNDS = 12
 interface RegisterUseCaseRequest {
   name: string
   email: string
@@ -21,7 +22,7 @@ export class RegisterUseCase {
     email,
     password,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-    const password_hash = await hash(password, 6)
+    const password_hash = await hash(password, BCRYPT_ROUNDS)
 
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
