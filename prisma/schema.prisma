@@ -34,7 +34,7 @@ model User {
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   ownerId   String   @map("owner_id") @db.Uuid
   name      String
   isActive  Boolean  @default(true) @map("is_active")
@@ -52,7 +52,7 @@ model Category {
 model Expense {
   id            String            @id @default(uuid()) @db.Uuid
   userId        String            @map("user_id") @db.Uuid
-  categoryId    String?           @map("category_id")
+  categoryId    String?           @map("category_id") @db.Uuid
   description   String
   amount        Decimal           @db.Decimal(6, 2)
   paymentMethod PaymentMethodType @map("payment_method")
