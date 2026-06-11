@@ -38,6 +38,16 @@ describe('Register Use Case', () => {
     expect(isPasswordCorrectlyHashed).toBe(true)
   })
 
+  it('should normalize the user e-mail upon registration', async () => {
+    const { user } = await sut.execute({
+      name: 'fulano',
+      email: '  Teste@Gmail.com  ',
+      password: '123',
+    })
+
+    expect(user.email).toEqual('teste@gmail.com')
+  })
+
   it('should not be able to register with same e-mail twice', async () => {
     const email = 'teste@gmail.com'
 
@@ -54,6 +64,43 @@ describe('Register Use Case', () => {
         password: '123',
       }),
     ).rejects.toBeInstanceOf(UserAlreadyExistsError)
+  })
+
+  it('should not be able to register the same active e-mail with different casing', async () => {
+    await sut.execute({
+      name: 'fulano',
+      email: 'Teste@Gmail.com',
+      password: '123',
+    })
+
+    await expect(() =>
+      sut.execute({
+        name: 'ciclano',
+        email: 'teste@gmail.com',
+        password: '123',
+      }),
+    ).rejects.toBeInstanceOf(UserAlreadyExistsError)
+  })
+
+  it('should be able to register with an e-mail from a deleted user', async () => {
+    const email = 'teste@gmail.com'
+
+    const { user: deletedUser } = await sut.execute({
+      name: 'fulano',
+      email,
+      password: '123',
+    })
+
+    deletedUser.deletedAt = new Date()
+
+    const { user } = await sut.execute({
+      name: 'ciclano',
+      email,
+      password: '123',
+    })
+
+    expect(user.id).not.toEqual(deletedUser.id)
+    expect(user.email).toEqual(email)
   })
 })
 

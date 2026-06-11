@@ -2,6 +2,7 @@ import { hash } from 'bcryptjs'
 import type { UsersRepository } from '@/repositories/users-repository'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 import type { User } from '@prisma/client'
+import { normalizeEmail } from '@/utils/normalize-email'
 
 const BCRYPT_ROUNDS = 12
 interface RegisterUseCaseRequest {
@@ -22,9 +23,10 @@ export class RegisterUseCase {
     email,
     password,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
+    const normalizedEmail = normalizeEmail(email)
     const password_hash = await hash(password, BCRYPT_ROUNDS)
 
-    const userWithSameEmail = await this.usersRepository.findByEmail(email)
+    const userWithSameEmail = await this.usersRepository.findByEmail(normalizedEmail)
 
     if (userWithSameEmail) {
       throw new UserAlreadyExistsError()
@@ -32,7 +34,7 @@ export class RegisterUseCase {
 
     const user = await this.usersRepository.create({
       name,
-      email,
+      email: normalizedEmail,
       passwordHash: password_hash,
     })
 

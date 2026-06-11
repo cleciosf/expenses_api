@@ -4,7 +4,7 @@ import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case'
 
 const authenticateBodySchema = z.object({
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email(),
   password: z.string().min(6)
 })
 

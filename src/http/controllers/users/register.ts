@@ -5,7 +5,7 @@ import { makeRegisterUseCase } from '@/use-cases/factories/make-register-use-cas
 
 const registerBodySchema = z.object({
   name: z.string(),
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email(),
   password: z.string().min(6)
 })
 
