@@ -1,18 +1,22 @@
 import type { User, Prisma } from '@prisma/client';
 import type { UsersRepository } from '../users-repository'
 import { randomUUID } from 'node:crypto'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 
 export class InMemoryUserRepository implements UsersRepository {
   public items: User[] = []
 
   async findById(id: string) {
-    const user = this.items.find((item) => item.id === id)
+    const user = this.items.find((item) => item.id === id && item.deletedAt === null)
 
     return user || null
   }
 
   async findByEmail(email: string) {
-    const user = this.items.find((item) => item.email === email)
+    const normalizedEmail = email.toLowerCase()
+    const user = this.items.find(
+      (item) => item.email.toLowerCase() === normalizedEmail && item.deletedAt === null,
+    )
 
     return user || null
   }
@@ -32,5 +36,46 @@ export class InMemoryUserRepository implements UsersRepository {
 
     return user
 
+  }
+
+  async update(id: string, data: Prisma.UserUpdateInput) {
+    const userIndex = this.items.findIndex((item) => item.id === id)
+
+    if (userIndex === -1) {
+      throw new ResourceNotFoundError()
+    }
+
+    const existingUser = this.items[userIndex]
+
+    const updatedUser = {
+      ...existingUser,
+      name: (data.name as string) ?? existingUser.name,
+      email: (data.email as string) ?? existingUser.email,
+      updatedAt: new Date()
+    }
+
+    this.items[userIndex] = updatedUser
+
+    return updatedUser
+  }
+
+  async changePassword(id: string, passwordHash: string) {
+    const userIndex = this.items.findIndex((item) => item.id === id)
+
+    if (userIndex === -1) {
+      throw new ResourceNotFoundError()
+    }
+
+    const updatedUser = this.items[userIndex]
+
+    const changePassword = {
+      ...updatedUser,
+      passwordHash,
+      updatedAt: new Date()
+    }
+
+    this.items[userIndex] = changePassword
+
+    return updatedUser
   }
 }
