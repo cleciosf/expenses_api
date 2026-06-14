@@ -39,7 +39,7 @@ export class InMemoryUserRepository implements UsersRepository {
   }
 
   async update(id: string, data: Prisma.UserUpdateInput) {
-    const userIndex = this.items.findIndex((item) => item.id === id)
+    const userIndex = this.items.findIndex((item) => item.id === id && item.deletedAt === null)
 
     if (userIndex === -1) {
       throw new ResourceNotFoundError()
@@ -60,7 +60,7 @@ export class InMemoryUserRepository implements UsersRepository {
   }
 
   async changePassword(id: string, passwordHash: string) {
-    const userIndex = this.items.findIndex((item) => item.id === id)
+    const userIndex = this.items.findIndex((item) => item.id === id && item.deletedAt === null)
 
     if (userIndex === -1) {
       throw new ResourceNotFoundError()
@@ -76,7 +76,7 @@ export class InMemoryUserRepository implements UsersRepository {
 
     this.items[userIndex] = changePassword
 
-    return updatedUser
+    return changePassword
   }
 
   async softDelete(id: string) {

@@ -46,21 +46,35 @@ export class PrismaUserRepository implements UsersRepository {
   }
 
   async update(id: string, data: Prisma.UserUpdateInput) {
-    const user = await prisma.user.update({
-      where: { id },
-      data,
-    })
+    try {
+      const user = await prisma.user.update({
+        where: {
+          id,
+          deletedAt: null,
+        },
+        data,
+      })
 
-    return user
+      return user
+    } catch (error) {
+      throwIfNotFound(error)
+    }
   }
 
   async changePassword(id: string, passwordHash: string) {
-    const user = await prisma.user.update({
-      where: { id },
-      data: { passwordHash },
-    })
+    try {
+      const user = await prisma.user.update({
+        where: {
+          id,
+          deletedAt: null,
+        },
+        data: { passwordHash },
+      })
 
-    return user
+      return user
+    } catch (error) {
+      throwIfNotFound(error)
+    }
   }
 
   async softDelete(id: string) {

@@ -5,6 +5,7 @@ import fastifyHelmet from '@fastify/helmet'
 import { env } from './env'
 import { ZodError } from 'zod'
 import { userRoutes } from './http/controllers/users/routes'
+import { ResourceNotFoundError } from './use-cases/errors/resource-not-found-error'
 
 export const app = fastify()
 
@@ -28,6 +29,10 @@ app.register(userRoutes)
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
     return reply.status(400).send({ message: 'Validation Error', issues: error.format() })
+  }
+
+  if (error instanceof ResourceNotFoundError) {
+    return reply.status(404).send({ message: error.message })
   }
 
   if (env.NODE_ENV !== 'production') {
