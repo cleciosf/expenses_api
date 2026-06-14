@@ -1,6 +1,15 @@
 import { prisma } from '@/lib/prisma'
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import type { UsersRepository } from '../users-repository'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+
+function throwIfNotFound(error: unknown): never {
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+    throw new ResourceNotFoundError()
+  }
+
+  throw error
+}
 
 export class PrismaUserRepository implements UsersRepository {
   async findById(id: string) {
@@ -52,5 +61,23 @@ export class PrismaUserRepository implements UsersRepository {
     })
 
     return user
+  }
+
+  async softDelete(id: string) {
+    try {
+      const user = await prisma.user.update({
+        where: {
+          id,
+          deletedAt: null
+        },
+        data: {
+          deletedAt: new Date()
+        },
+      })
+
+      return user
+    } catch (error) {
+      throwIfNotFound(error)
+    }
   }
 }

@@ -78,4 +78,23 @@ export class InMemoryUserRepository implements UsersRepository {
 
     return updatedUser
   }
+
+  async softDelete(id: string) {
+    const userIndex = this.items.findIndex((item) => item.id === id && item.deletedAt === null)
+
+    if (userIndex === -1) {
+      throw new ResourceNotFoundError()
+    }
+
+    const user = this.items[userIndex]
+
+    const updatedUser = {
+      ...user,
+      deletedAt: new Date()
+    }
+
+    this.items[userIndex] = updatedUser
+
+    return updatedUser
+  }
 }
