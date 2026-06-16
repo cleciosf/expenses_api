@@ -6,7 +6,7 @@ import { refresh } from "./refresh";
 import { profile } from './profile'
 import { updateUser } from "./update";
 import { changePassword } from "./change-password";
-import { softDelete } from "./soft-delete-use-case";
+import { softDelete } from "./soft-delete";
 
 export async function userRoutes(app: FastifyInstance) {
   app.post('/users', register)
