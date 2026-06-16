@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { makeChagePasswordUseCase } from '@/use-cases/factories/make-change-password-use-case'
+import { makeChangePasswordUseCase } from '@/use-cases/factories/make-change-password-use-case'
 import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error'
 
 const changePasswordBodySchema = z.object({
@@ -13,7 +13,7 @@ export async function changePassword(request: FastifyRequest, reply: FastifyRepl
   const { currentPassword, newPassword } = changePasswordBodySchema.parse(request.body)
 
   try {
-    await makeChagePasswordUseCase().execute({ userId: request.user.sub, currentPassword, newPassword })
+    await makeChangePasswordUseCase().execute({ userId: request.user.sub, currentPassword, newPassword })
   } catch (err) {
     if (err instanceof InvalidCredentialsError) {
       return reply.status(409).send({ message: err.message })
