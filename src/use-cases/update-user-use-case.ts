@@ -1,8 +1,8 @@
-import type { UsersRepository } from "@/repositories/users-repository";
-import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
-import type { User } from '@prisma/client';
+import type { UsersRepository } from "@/repositories/users-repository"
+import { UserAlreadyExistsError } from "./errors/user-already-exists-error"
+import type { User } from '@prisma/client'
 import type { Prisma } from '@prisma/client'
-import { normalizeEmail } from "@/utils/normalize-email";
+import { normalizeEmail } from "@/utils/normalize-email"
 
 interface UpdateUseCaseRequest {
   userId: string

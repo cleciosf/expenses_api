@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client'
 import type { UsersRepository } from '../users-repository'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 function throwIfNotFound(error: unknown): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {

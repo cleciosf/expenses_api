@@ -1,7 +1,7 @@
-import type { User, Prisma } from '@prisma/client';
+import type { User, Prisma } from '@prisma/client'
 import type { UsersRepository } from '../users-repository'
 import { randomUUID } from 'node:crypto'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 export class InMemoryUserRepository implements UsersRepository {
   public items: User[] = []

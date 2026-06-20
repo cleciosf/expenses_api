@@ -1,5 +1,5 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
-import { PrismaUserRepository } from "@/repositories/prisma/prisma-users-repository";
+import type { FastifyRequest, FastifyReply } from "fastify"
+import { PrismaUserRepository } from "@/repositories/prisma/prisma-users-repository"
 
 const usersRepository = new PrismaUserRepository()
 
