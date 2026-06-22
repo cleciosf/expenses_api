@@ -6,4 +6,5 @@ export interface CategoriesRepository {
   findByNameAndOwnerId(name: string, ownerId: string): Promise<Category | null>
   update(id: string, ownerId: string, data: Prisma.CategoryUpdateInput): Promise<Category>
   delete(id: string, ownerId: string): Promise<Category>
+  findByIdAndOwnerId(id: string, ownerId: string): Promise<Category | null>
 }

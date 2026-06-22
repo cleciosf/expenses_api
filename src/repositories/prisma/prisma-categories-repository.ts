@@ -85,4 +85,15 @@ export class PrismaCategoryRepository implements CategoriesRepository {
       throwIfKnownPrismaError(error)
     }
   }
+
+  async findByIdAndOwnerId(id: string, ownerId: string) {
+    const category = await prisma.category.findFirst({
+      where: {
+        id,
+        ownerId,
+        deletedAt: null
+      }
+    })
+    return category
+  }
 }

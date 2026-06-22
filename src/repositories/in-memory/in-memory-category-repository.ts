@@ -81,4 +81,12 @@ export class InMemoryCategoryRepository implements CategoriesRepository {
 
     return deletedCategory
   }
+
+  async findByIdAndOwnerId(id: string, ownerId: string) {
+    const category = this.items.find(
+      (item) => item.id === id && item.ownerId === ownerId && item.deletedAt === null
+    )
+
+    return category || null
+  }
 }
