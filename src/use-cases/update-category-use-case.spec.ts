@@ -67,6 +67,26 @@ describe("Update Category Use Case", () => {
     ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
   })
 
+  it("should not update a category to a duplicated name with different casing for the same owner", async () => {
+    await categoryRepository.create({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    const category = await categoryRepository.create({
+      name: "Casa",
+      ownerId: "user-1"
+    })
+
+    await expect(() =>
+      sut.execute({
+        categoryId: category.id,
+        ownerId: "user-1",
+        name: "mercado"
+      })
+    ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
+  })
+
   it("should not update a deleted category", async () => {
     const category = await categoryRepository.create({
       name: "Mercado",

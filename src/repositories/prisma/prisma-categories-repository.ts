@@ -2,10 +2,15 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import type { CategoriesRepository } from "../categories-repository"
 import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error"
+import { CategoryAlreadyExistsError } from "@/use-cases/errors/category-already-exists"
 
-function throwIfNotFound(error: unknown): never {
+function throwIfKnownPrismaError(error: unknown): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
     throw new ResourceNotFoundError()
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    throw new CategoryAlreadyExistsError()
   }
 
   throw error
@@ -13,10 +18,14 @@ function throwIfNotFound(error: unknown): never {
 
 export class PrismaCategoryRepository implements CategoriesRepository {
   async create(data: Prisma.CategoryUncheckedCreateInput) {
-    const category = await prisma.category.create({
-      data
-    })
-    return category
+    try {
+      const category = await prisma.category.create({
+        data
+      })
+      return category
+    } catch (error) {
+      throwIfKnownPrismaError(error)
+    }
   }
 
   async update(id: string, ownerId: string, data: Prisma.CategoryUpdateInput) {
@@ -24,20 +33,22 @@ export class PrismaCategoryRepository implements CategoriesRepository {
       const category = await prisma.category.update({
         where: {
           id,
-          ownerId
+          ownerId,
+          deletedAt: null
         },
         data
       })
       return category
     } catch (error) {
-      throwIfNotFound(error)
+      throwIfKnownPrismaError(error)
     }
   }
 
   async findById(id: string) {
     const category = await prisma.category.findFirst({
       where: {
-        id
+        id,
+        deletedAt: null
       }
     })
     return category
@@ -46,8 +57,12 @@ export class PrismaCategoryRepository implements CategoriesRepository {
   async findByNameAndOwnerId(name: string, ownerId: string) {
     const category = await prisma.category.findFirst({
       where: {
-        name,
-        ownerId
+        name: {
+          equals: name,
+          mode: "insensitive"
+        },
+        ownerId,
+        deletedAt: null
       }
     })
     return category
@@ -55,15 +70,19 @@ export class PrismaCategoryRepository implements CategoriesRepository {
 
   async delete(id: string, ownerId: string) {
     try {
-      const category = await prisma.category.delete({
+      const category = await prisma.category.update({
         where: {
           id,
-          ownerId
+          ownerId,
+          deletedAt: null
+        },
+        data: {
+          deletedAt: new Date()
         }
       })
       return category
     } catch (error) {
-      throwIfNotFound(error)
+      throwIfKnownPrismaError(error)
     }
   }
 }

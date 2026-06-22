@@ -36,6 +36,20 @@ describe("Create Category Use Case", () => {
     ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
   })
 
+  it("should not create a duplicated category with different casing for the same owner", async () => {
+    await sut.execute({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    await expect(() =>
+      sut.execute({
+        name: "mercado",
+        ownerId: "user-1"
+      })
+    ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
+  })
+
   it("should allow the same category name for different owners", async () => {
     await sut.execute({
       name: "Mercado",
@@ -48,5 +62,21 @@ describe("Create Category Use Case", () => {
     })
 
     expect(category.ownerId).toEqual("user-2")
+  })
+
+  it("should be able to create with a name from a deleted category", async () => {
+    const { category: deletedCategory } = await sut.execute({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    await categoryRepository.delete(deletedCategory.id, "user-1")
+
+    const { category } = await sut.execute({
+      name: "mercado",
+      ownerId: "user-1"
+    })
+
+    expect(category.id).not.toEqual(deletedCategory.id)
   })
 })
