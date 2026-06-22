@@ -20,7 +20,5 @@ export async function changePassword(request: FastifyRequest, reply: FastifyRepl
     }
     throw err
   }
-  return reply.status(201).send({
-    message: 'Senha alterada com sucesso'
-  })
+  return reply.status(204).send()
 }

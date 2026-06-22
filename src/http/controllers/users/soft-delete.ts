@@ -8,5 +8,5 @@ export async function softDelete(request: FastifyRequest, reply: FastifyReply) {
 
   await softDeleteUseCase.execute({ userId })
 
-  return reply.status(200).send({ message: 'Usuário deletado com sucesso' })
+  return reply.status(204).send()
 }

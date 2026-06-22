@@ -17,5 +17,5 @@ export async function deleteCategory(request: FastifyRequest, reply: FastifyRepl
     ownerId: request.user.sub
   })
 
-  return reply.status(200).send({ message: 'Categoria deletada com sucesso' })
+  return reply.status(204).send()
 }

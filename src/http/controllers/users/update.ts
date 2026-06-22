@@ -20,7 +20,7 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
     throw err
   }
 
-  return reply.status(201).send(
+  return reply.status(200).send(
     {
       message: 'Usuário editado com sucesso',
       user: {
