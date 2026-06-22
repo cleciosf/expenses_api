@@ -67,12 +67,13 @@ describe("Update Category Use Case", () => {
     ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
   })
 
-  it("should not update an inactive category", async () => {
+  it("should not update a deleted category", async () => {
     const category = await categoryRepository.create({
       name: "Mercado",
-      ownerId: "user-1",
-      isActive: false
+      ownerId: "user-1"
     })
+
+    await categoryRepository.delete(category.id, "user-1")
 
     await expect(() =>
       sut.execute({

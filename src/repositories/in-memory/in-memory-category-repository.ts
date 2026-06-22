@@ -25,7 +25,6 @@ export class InMemoryCategoryRepository implements CategoriesRepository {
       id: randomUUID(),
       ownerId: data.ownerId,
       name: data.name,
-      isActive: data.isActive ?? true,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -37,7 +36,7 @@ export class InMemoryCategoryRepository implements CategoriesRepository {
 
   async update(id: string, ownerId: string, data: Prisma.CategoryUpdateInput) {
     const categoryIndex = this.items.findIndex(
-      (item) => item.id === id && item.ownerId === ownerId && item.isActive
+      (item) => item.id === id && item.ownerId === ownerId
     )
 
     if (categoryIndex === -1) {
@@ -55,5 +54,19 @@ export class InMemoryCategoryRepository implements CategoriesRepository {
     this.items[categoryIndex] = updateCategory
 
     return updateCategory
+  }
+
+  async delete(id: string, ownerId: string) {
+    const categoryIndex = this.items.findIndex(
+      (item) => item.id === id && item.ownerId === ownerId
+    )
+
+    if (categoryIndex === -1) {
+      throw new ResourceNotFoundError()
+    }
+
+    const [category] = this.items.splice(categoryIndex, 1)
+
+    return category
   }
 }

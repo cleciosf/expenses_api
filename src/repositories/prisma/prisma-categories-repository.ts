@@ -24,8 +24,7 @@ export class PrismaCategoryRepository implements CategoriesRepository {
       const category = await prisma.category.update({
         where: {
           id,
-          ownerId,
-          isActive: true
+          ownerId
         },
         data
       })
@@ -38,8 +37,7 @@ export class PrismaCategoryRepository implements CategoriesRepository {
   async findById(id: string) {
     const category = await prisma.category.findFirst({
       where: {
-        id,
-        isActive: true
+        id
       }
     })
     return category
@@ -53,5 +51,19 @@ export class PrismaCategoryRepository implements CategoriesRepository {
       }
     })
     return category
+  }
+
+  async delete(id: string, ownerId: string) {
+    try {
+      const category = await prisma.category.delete({
+        where: {
+          id,
+          ownerId
+        }
+      })
+      return category
+    } catch (error) {
+      throwIfNotFound(error)
+    }
   }
 }
