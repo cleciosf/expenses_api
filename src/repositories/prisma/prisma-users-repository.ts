@@ -2,10 +2,15 @@ import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import type { UsersRepository } from '../users-repository'
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
 
-function throwIfNotFound(error: unknown): never {
+function throwIfKnownPrismaError(error: unknown): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
     throw new ResourceNotFoundError()
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+    throw new UserAlreadyExistsError()
   }
 
   throw error
@@ -38,11 +43,15 @@ export class PrismaUserRepository implements UsersRepository {
   }
 
   async create(data: Prisma.UserCreateInput) {
-    const user = await prisma.user.create({
-      data
-    })
+    try {
+      const user = await prisma.user.create({
+        data
+      })
 
-    return user
+      return user
+    } catch (error) {
+      throwIfKnownPrismaError(error)
+    }
   }
 
   async update(id: string, data: Prisma.UserUpdateInput) {
@@ -57,7 +66,7 @@ export class PrismaUserRepository implements UsersRepository {
 
       return user
     } catch (error) {
-      throwIfNotFound(error)
+      throwIfKnownPrismaError(error)
     }
   }
 
@@ -73,7 +82,7 @@ export class PrismaUserRepository implements UsersRepository {
 
       return user
     } catch (error) {
-      throwIfNotFound(error)
+      throwIfKnownPrismaError(error)
     }
   }
 
@@ -91,7 +100,7 @@ export class PrismaUserRepository implements UsersRepository {
 
       return user
     } catch (error) {
-      throwIfNotFound(error)
+      throwIfKnownPrismaError(error)
     }
   }
 }
