@@ -96,4 +96,18 @@ export class PrismaCategoryRepository implements CategoriesRepository {
     })
     return category
   }
+
+  async findManyByOwnerId(ownerId: string) {
+    const categories = await prisma.category.findMany({
+      where: {
+        ownerId,
+        deletedAt: null
+      },
+      orderBy: {
+        name: "asc"
+      }
+    })
+
+    return categories
+  }
 }

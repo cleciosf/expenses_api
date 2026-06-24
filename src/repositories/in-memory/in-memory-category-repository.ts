@@ -89,4 +89,10 @@ export class InMemoryCategoryRepository implements CategoriesRepository {
 
     return category || null
   }
+
+  async findManyByOwnerId(ownerId: string) {
+    return this.items.filter(
+      (item) => item.ownerId === ownerId && item.deletedAt === null
+    )
+  }
 }
