@@ -18,8 +18,10 @@ export class CreateCategoryUseCase {
     name,
     ownerId
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
+    const normalizedName = name.trim()
+
     const userWithSameCategory = await this.categoriesRepository.findByNameAndOwnerId(
-      name,
+      normalizedName,
       ownerId
     )
 
@@ -28,7 +30,7 @@ export class CreateCategoryUseCase {
     }
 
     const category = await this.categoriesRepository.create({
-      name,
+      name: normalizedName,
       ownerId
     })
 

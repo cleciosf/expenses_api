@@ -28,6 +28,21 @@ describe("Update Category Use Case", () => {
     expect(updatedCategory.name).toEqual("Casa")
   })
 
+  it("should trim the category name before updating it", async () => {
+    const category = await categoryRepository.create({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    const { category: updatedCategory } = await sut.execute({
+      categoryId: category.id,
+      ownerId: "user-1",
+      name: "  Casa  "
+    })
+
+    expect(updatedCategory.name).toEqual("Casa")
+  })
+
   it("should not update a category owned by another user", async () => {
     const category = await categoryRepository.create({
       name: "Mercado",
@@ -83,6 +98,26 @@ describe("Update Category Use Case", () => {
         categoryId: category.id,
         ownerId: "user-1",
         name: "mercado"
+      })
+    ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
+  })
+
+  it("should not update a category to a duplicated name with surrounding whitespace for the same owner", async () => {
+    await categoryRepository.create({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    const category = await categoryRepository.create({
+      name: "Casa",
+      ownerId: "user-1"
+    })
+
+    await expect(() =>
+      sut.execute({
+        categoryId: category.id,
+        ownerId: "user-1",
+        name: "  Mercado  "
       })
     ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
   })

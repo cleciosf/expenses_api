@@ -21,8 +21,10 @@ export class UpdateCategoryUseCase {
     ownerId,
     name
   }: UpdateCategoryCaseRequest): Promise<UpdateCategoryUseCaseResponse> {
+    const normalizedName = name.trim()
+
     const categoryWithSameName = await this.categoryRepository.findByNameAndOwnerId(
-      name,
+      normalizedName,
       ownerId
     )
 
@@ -31,7 +33,7 @@ export class UpdateCategoryUseCase {
     }
 
     const updateData: Prisma.CategoryUpdateInput = {
-      name
+      name: normalizedName
     }
 
     const category = await this.categoryRepository.update(

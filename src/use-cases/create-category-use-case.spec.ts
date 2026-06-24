@@ -22,6 +22,15 @@ describe("Create Category Use Case", () => {
     expect(category.ownerId).toEqual("user-1")
   })
 
+  it("should trim the category name before creating it", async () => {
+    const { category } = await sut.execute({
+      name: "  Mercado  ",
+      ownerId: "user-1"
+    })
+
+    expect(category.name).toEqual("Mercado")
+  })
+
   it("should not create a duplicated category for the same owner", async () => {
     await sut.execute({
       name: "Mercado",
@@ -45,6 +54,20 @@ describe("Create Category Use Case", () => {
     await expect(() =>
       sut.execute({
         name: "mercado",
+        ownerId: "user-1"
+      })
+    ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
+  })
+
+  it("should not create a duplicated category with surrounding whitespace for the same owner", async () => {
+    await sut.execute({
+      name: "Mercado",
+      ownerId: "user-1"
+    })
+
+    await expect(() =>
+      sut.execute({
+        name: "  Mercado  ",
         ownerId: "user-1"
       })
     ).rejects.toBeInstanceOf(CategoryAlreadyExistsError)
