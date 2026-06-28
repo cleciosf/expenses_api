@@ -7,6 +7,7 @@ import { ZodError } from 'zod'
 import { userRoutes } from './http/controllers/users/routes'
 import { ResourceNotFoundError } from './use-cases/errors/resource-not-found-error'
 import { categoriesRoutes } from './http/controllers/categories/routes'
+import { expenseRoutes } from './http/controllers/expenses/routes'
 
 export const app = fastify()
 
@@ -27,6 +28,7 @@ app.register(fastifyCookie)
 
 app.register(userRoutes)
 app.register(categoriesRoutes)
+app.register(expenseRoutes)
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
