@@ -24,4 +24,12 @@ export class InMemoryExpenseRepository implements ExpensesRepository {
 
     return expense
   }
+
+  async findByIdAndUserId(id: string, userId: string) {
+    const expense = this.items.find(
+      (item) => item.id === id && item.userId === userId && item.deletedAt === null
+    )
+
+    return expense || null
+  }
 }

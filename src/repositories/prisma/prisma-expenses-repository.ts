@@ -28,4 +28,16 @@ export class PrismaExpenseRepository implements ExpensesRepository {
       throwIfKnownPrismaError(error)
     }
   }
+
+  async findByIdAndUserId(id: string, userId: string) {
+    const expense = await prisma.expense.findFirst({
+      where: {
+        id,
+        userId,
+        deletedAt: null
+      }
+    })
+
+    return expense
+  }
 }
