@@ -4,7 +4,7 @@ import { makeRegisterExpenseUseCase } from '@/use-cases/factories/make-register-
 
 const registerBodySchema = z.object({
   description: z.string().trim().min(1),
-  amount: z.number().positive(),
+  amount: z.number().positive().max(9999.99, 'O valor não pode ser maior que 9999.99'),
   paymentMethod: z.enum(["CASH", "CREDIT_CARD", "DEBIT_CARD", "PIX"]),
   categoryId: z.string().uuid().nullish(),
   expenseDate: z.coerce.date(),
