@@ -1,6 +1,6 @@
 import type { Expense } from "@prisma/client"
 import { Prisma } from "@prisma/client"
-import type { ExpensesRepository } from "../expenses-repository"
+import type { ExpensesRepository, FindManyExpensesFilters } from "../expenses-repository"
 import { randomUUID } from "node:crypto"
 
 export class InMemoryExpenseRepository implements ExpensesRepository {
@@ -31,5 +31,27 @@ export class InMemoryExpenseRepository implements ExpensesRepository {
     )
 
     return expense || null
+  }
+
+  async findManyByUserId(userId: string, filters: FindManyExpensesFilters = {}) {
+    const {
+      categoryId,
+      paymentMethod,
+      startDate,
+      endDate,
+      minAmount,
+      maxAmount
+    } = filters
+
+    return this.items.filter((item) =>
+      item.userId === userId &&
+      item.deletedAt === null &&
+      (categoryId === undefined || item.categoryId === categoryId) &&
+      (paymentMethod === undefined || item.paymentMethod === paymentMethod) &&
+      (!startDate || item.expenseDate >= startDate) &&
+      (!endDate || item.expenseDate <= endDate) &&
+      (minAmount === undefined || item.amount.greaterThanOrEqualTo(minAmount)) &&
+      (maxAmount === undefined || item.amount.lessThanOrEqualTo(maxAmount))
+    )
   }
 }

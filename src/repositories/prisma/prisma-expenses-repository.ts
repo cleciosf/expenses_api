@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
-import type { ExpensesRepository } from "../expenses-repository"
+import type { ExpensesRepository, FindManyExpensesFilters } from "../expenses-repository"
 import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error"
 import { UserAlreadyExistsError } from "@/use-cases/errors/user-already-exists-error"
 
@@ -39,5 +39,29 @@ export class PrismaExpenseRepository implements ExpensesRepository {
     })
 
     return expense
+  }
+
+  async findManyByUserId(userId: string, filters: FindManyExpensesFilters = {}) {
+    const expenses = await prisma.expense.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+        categoryId: filters.categoryId,
+        paymentMethod: filters.paymentMethod,
+        expenseDate: {
+          gte: filters.startDate,
+          lte: filters.endDate
+        },
+        amount: {
+          gte: filters.minAmount,
+          lte: filters.maxAmount
+        }
+      },
+      orderBy: {
+        expenseDate: "asc"
+      }
+    })
+
+    return expenses
   }
 }
