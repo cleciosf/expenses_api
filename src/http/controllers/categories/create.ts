@@ -15,7 +15,7 @@ export async function createCategory(request: FastifyRequest, reply: FastifyRepl
     const { category } = await makeCreateCategoryUseCase().execute({ name, ownerId })
 
     return reply.status(201).send({
-      message: "Categoria cadastrada com sucesso",
+      message: "Category created successfully",
       category: { id: category.id, name, ownerId }
     })
   } catch (err) {

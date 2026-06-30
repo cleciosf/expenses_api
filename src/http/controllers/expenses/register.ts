@@ -4,7 +4,7 @@ import { makeRegisterExpenseUseCase } from '@/use-cases/factories/make-register-
 
 const registerBodySchema = z.object({
   description: z.string().trim().min(1),
-  amount: z.number().positive().max(9999.99, 'O valor não pode ser maior que 9999.99'),
+  amount: z.number().positive().max(9999.99, 'Amount cannot be greater than 9999.99'),
   paymentMethod: z.enum(["CASH", "CREDIT_CARD", "DEBIT_CARD", "PIX"]),
   categoryId: z.string().uuid().nullish(),
   expenseDate: z.coerce.date(),
@@ -18,6 +18,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
   await makeRegisterExpenseUseCase().execute({ userId, categoryId, description, amount, paymentMethod, expenseDate })
 
   return reply.status(201).send({
-    message: "Despesa Cadastrada com sucesso"
+    message: "Expense registered successfully"
   })
 } 

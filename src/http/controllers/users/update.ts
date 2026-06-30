@@ -22,7 +22,7 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
 
   return reply.status(200).send(
     {
-      message: 'Usuário editado com sucesso',
+      message: 'User updated successfully',
       user: {
         name,
         email,

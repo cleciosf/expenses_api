@@ -23,7 +23,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 
   return reply.status(201).send(
     {
-      message: 'Usuário cadastrado com sucesso',
+      message: 'User registered successfully',
       user: { name, email }
     })
 }
