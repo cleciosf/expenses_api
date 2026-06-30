@@ -24,13 +24,14 @@ export class RegisterUseCase {
     password,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
     const normalizedEmail = normalizeEmail(email)
-    const password_hash = await hash(password, BCRYPT_ROUNDS)
 
     const userWithSameEmail = await this.usersRepository.findByEmail(normalizedEmail)
 
     if (userWithSameEmail) {
       throw new UserAlreadyExistsError()
     }
+
+    const password_hash = await hash(password, BCRYPT_ROUNDS)
 
     const user = await this.usersRepository.create({
       name,
